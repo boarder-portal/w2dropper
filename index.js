@@ -21,11 +21,17 @@ document.body.addEventListener('drop', async (e) => {
     const link = (_a = e.dataTransfer) === null || _a === void 0 ? void 0 : _a.getData('text/plain');
     const searchInputNode = document.getElementById('search-bar-input');
     const searchButtonNode = searchInputNode === null || searchInputNode === void 0 ? void 0 : searchInputNode.nextElementSibling;
-    if (!(searchInputNode instanceof HTMLInputElement) || !(searchButtonNode instanceof HTMLButtonElement)) {
+    const verticalScrollerNode = document.querySelector('.w2g-scroll-vertical');
+    if (!(searchInputNode instanceof HTMLInputElement) || !(searchButtonNode instanceof HTMLButtonElement) || !verticalScrollerNode) {
         return;
     }
     searchInputNode.value = link !== null && link !== void 0 ? link : '';
     searchInputNode.dispatchEvent(new Event('change'));
+    const prevScroll = verticalScrollerNode.scrollTop;
+    const scrollHandler = () => {
+        verticalScrollerNode.scrollTop = prevScroll;
+    };
+    verticalScrollerNode.addEventListener('scroll', scrollHandler);
     searchButtonNode.click();
     await waitElementsCount(ADD_TO_PLAYLIST_BUTTON_SELECTOR, 0);
     await waitElementsCount(ADD_TO_PLAYLIST_BUTTON_SELECTOR, 1);
@@ -34,4 +40,6 @@ document.body.addEventListener('drop', async (e) => {
         return;
     }
     addToPlaylistButtonNode.click();
+    await delay(1000);
+    verticalScrollerNode.removeEventListener('scroll', scrollHandler);
 });
