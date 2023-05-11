@@ -5,10 +5,10 @@ document.body.addEventListener('dragover', (e) => {
 async function delay(ms) {
     await new Promise((res) => setTimeout(res, ms));
 }
-async function waitElementsCount(selector, count, betweenChecks = 100) {
+async function waitElementsWithCountCondition(selector, checkFn, betweenChecks = 100) {
     while (true) {
         const elements = document.querySelectorAll(selector);
-        if (elements.length === count) {
+        if (checkFn(elements.length)) {
             break;
         }
         await delay(betweenChecks);
@@ -19,6 +19,9 @@ document.body.addEventListener('drop', async (e) => {
     var _a;
     e.preventDefault();
     const link = (_a = e.dataTransfer) === null || _a === void 0 ? void 0 : _a.getData('text/plain');
+    if (!(link === null || link === void 0 ? void 0 : link.includes('youtube'))) {
+        return;
+    }
     const searchInputNode = document.getElementById('search-bar-input');
     const searchButtonNode = searchInputNode === null || searchInputNode === void 0 ? void 0 : searchInputNode.nextElementSibling;
     const verticalScrollerNode = document.querySelector('.w2g-scroll-vertical');
@@ -33,8 +36,8 @@ document.body.addEventListener('drop', async (e) => {
     };
     verticalScrollerNode.addEventListener('scroll', scrollHandler);
     searchButtonNode.click();
-    await waitElementsCount(ADD_TO_PLAYLIST_BUTTON_SELECTOR, 0);
-    await waitElementsCount(ADD_TO_PLAYLIST_BUTTON_SELECTOR, 1);
+    await waitElementsWithCountCondition(ADD_TO_PLAYLIST_BUTTON_SELECTOR, (count) => count === 0);
+    await waitElementsWithCountCondition(ADD_TO_PLAYLIST_BUTTON_SELECTOR, (count) => count > 0);
     const addToPlaylistButtonNode = document.body.querySelector(ADD_TO_PLAYLIST_BUTTON_SELECTOR);
     if (!(addToPlaylistButtonNode instanceof HTMLButtonElement)) {
         return;

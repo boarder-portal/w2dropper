@@ -6,11 +6,11 @@ async function delay(ms: number) {
   await new Promise((res) => setTimeout(res, ms));
 }
 
-async function waitElementsCount(selector: string, count: number, betweenChecks: number = 100): Promise<void> {
+async function waitElementsWithCountCondition(selector: string, checkFn: (count: number) => boolean, betweenChecks: number = 100): Promise<void> {
   while (true) {
     const elements = document.querySelectorAll(selector);
 
-    if (elements.length === count) {
+    if (checkFn(elements.length)) {
       break;
     }
 
@@ -24,6 +24,10 @@ document.body.addEventListener('drop', async (e) => {
   e.preventDefault();
 
   const link = e.dataTransfer?.getData('text/plain');
+
+  if (!link?.includes('youtube')) {
+    return;
+  }
 
   const searchInputNode = document.getElementById('search-bar-input');
   const searchButtonNode = searchInputNode?.nextElementSibling;
@@ -45,8 +49,8 @@ document.body.addEventListener('drop', async (e) => {
   verticalScrollerNode.addEventListener('scroll', scrollHandler)
   searchButtonNode.click();
 
-  await waitElementsCount(ADD_TO_PLAYLIST_BUTTON_SELECTOR, 0);
-  await waitElementsCount(ADD_TO_PLAYLIST_BUTTON_SELECTOR, 1);
+  await waitElementsWithCountCondition(ADD_TO_PLAYLIST_BUTTON_SELECTOR, (count) => count === 0);
+  await waitElementsWithCountCondition(ADD_TO_PLAYLIST_BUTTON_SELECTOR, (count) => count > 0);
 
   const addToPlaylistButtonNode = document.body.querySelector(ADD_TO_PLAYLIST_BUTTON_SELECTOR);
 
