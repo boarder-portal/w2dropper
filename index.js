@@ -23,7 +23,7 @@ document.body.addEventListener('drop', async (e) => {
         return;
     }
     const searchInputNode = document.getElementById('search-bar-input');
-    const searchButtonNode = searchInputNode === null || searchInputNode === void 0 ? void 0 : searchInputNode.nextElementSibling;
+    const searchButtonNode = document.querySelector('.w2g-intro-search button[type="submit"]');
     const verticalScrollerNode = document.querySelector('.w2g-scroll-vertical');
     if (!(searchInputNode instanceof HTMLInputElement) || !(searchButtonNode instanceof HTMLButtonElement) || !verticalScrollerNode) {
         return;
